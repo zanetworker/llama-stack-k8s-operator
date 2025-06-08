@@ -4,7 +4,7 @@ This example demonstrates a simple LlamaStack deployment suitable for developmen
 
 ## Overview
 
-This configuration creates a single-replica LlamaStack instance using the meta-reference distribution with basic resource allocation.
+This configuration creates a single-replica LlamaStack instance using the ollama distribution with basic resource allocation.
 
 ## Configuration
 
@@ -21,7 +21,7 @@ spec:
   replicas: 1
   server:
     distribution:
-      name: "meta-reference"
+      name: "ollama"
     containerSpec:
       name: "llama-stack"
       port: 8321
