@@ -13,37 +13,9 @@ Before installing the operator, ensure you have:
 
 ## Installation Methods
 
-### Method 1: Quick Install (Recommended)
+### Method 1: Kustomize (Recommended)
 
-The fastest way to install the operator is using the pre-built manifests:
-
-```bash
-kubectl apply -f https://github.com/llamastack/llama-stack-k8s-operator/releases/latest/download/operator.yaml
-```
-
-This will:
-- Install the Custom Resource Definitions (CRDs)
-- Create the necessary RBAC resources
-- Deploy the operator in the `llamastack-operator-system` namespace
-
-### Method 2: Helm Chart
-
-Install using Helm for more configuration options:
-
-```bash
-# Add the Helm repository
-helm repo add llamastack https://llamastack.github.io/helm-charts
-helm repo update
-
-# Install the operator
-helm install llamastack-operator llamastack/llama-stack-k8s-operator \
-  --namespace llamastack-operator-system \
-  --create-namespace
-```
-
-### Method 3: Kustomize
-
-For customized deployments, use Kustomize:
+The recommended way to install the operator is using Kustomize:
 
 ```bash
 # Clone the repository
@@ -54,16 +26,35 @@ cd llama-stack-k8s-operator
 kubectl apply -k config/default
 ```
 
+This will:
+- Install the Custom Resource Definitions (CRDs)
+- Create the necessary RBAC resources
+- Deploy the operator in the `llama-stack-k8s-operator-system` namespace
+
+### Method 2: Build from Source
+
+For development or customized builds:
+
+```bash
+# Clone the repository
+git clone https://github.com/llamastack/llama-stack-k8s-operator.git
+cd llama-stack-k8s-operator
+
+# Build and deploy
+make docker-build docker-push IMG=<your-registry>/llama-stack-k8s-operator:tag
+make deploy IMG=<your-registry>/llama-stack-k8s-operator:tag
+```
+
 ## Verification
 
 After installation, verify that the operator is running:
 
 ```bash
 # Check operator deployment
-kubectl get deployment -n llamastack-operator-system
+kubectl get deployment -n llama-stack-k8s-operator-system llama-stack-k8s-operator-controller-manager
 
 # Check operator logs
-kubectl logs -n llamastack-operator-system deployment/llamastack-operator-controller-manager
+kubectl logs -n llama-stack-k8s-operator-system deployment/llama-stack-k8s-operator-controller-manager
 
 # Verify CRDs are installed
 kubectl get crd llamastackdistributions.llamastack.io
@@ -187,7 +178,7 @@ apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: llamastack-operator-netpol
-  namespace: llamastack-operator-system
+  namespace: llama-stack-k8s-operator-system
 spec:
   podSelector:
     matchLabels:
@@ -221,22 +212,22 @@ kubectl apply -f https://raw.githubusercontent.com/llamastack/llama-stack-k8s-op
 **2. Operator Pod Not Starting**
 ```bash
 # Check pod status
-kubectl get pods -n llamastack-operator-system
+kubectl get pods -n llama-stack-k8s-operator-system
 
 # Check events
-kubectl describe pod -n llamastack-operator-system <pod-name>
+kubectl describe pod -n llama-stack-k8s-operator-system <pod-name>
 
 # Check logs
-kubectl logs -n llamastack-operator-system <pod-name>
+kubectl logs -n llama-stack-k8s-operator-system <pod-name>
 ```
 
 **3. Permission Denied Errors**
 ```bash
 # Check RBAC configuration
-kubectl auth can-i create llamastackdistributions --as=system:serviceaccount:llamastack-operator-system:llamastack-operator-controller-manager
+kubectl auth can-i create llamastackdistributions --as=system:serviceaccount:llama-stack-k8s-operator-system:llama-stack-k8s-operator-controller-manager
 
 # Verify service account
-kubectl get serviceaccount -n llamastack-operator-system
+kubectl get serviceaccount -n llama-stack-k8s-operator-system
 ```
 
 ### Debug Mode

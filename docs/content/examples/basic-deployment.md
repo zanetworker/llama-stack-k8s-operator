@@ -35,8 +35,8 @@ spec:
       env:
       - name: LOG_LEVEL
         value: "info"
-      - name: LLAMASTACK_PORT
-        value: "8321"
+      - name: INFERENCE_MODEL
+        value: "meta-llama/Llama-3.2-3B-Instruct"
 ```
 
 ## Deployment Steps
