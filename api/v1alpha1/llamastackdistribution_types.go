@@ -40,6 +40,8 @@ const (
 	DefaultLabelValue = "llama-stack"
 	// DefaultMountPath is the default mount path for storage
 	DefaultMountPath = "/.llama"
+	// LlamaStackDistributionKind is the kind name for LlamaStackDistribution resources
+	LlamaStackDistributionKind = "LlamaStackDistribution"
 )
 
 // DefaultStorageSize is the default size for persistent storage
@@ -179,6 +181,7 @@ type LlamaStackDistributionStatus struct {
 }
 
 //+kubebuilder:object:root=true
+//+kubebuilder:resource:shortName=llsd
 //+kubebuilder:subresource:status
 //+kubebuilder:printcolumn:name="Phase",type="string",JSONPath=".status.phase"
 //+kubebuilder:printcolumn:name="Operator Version",type="string",JSONPath=".status.version.operatorVersion"

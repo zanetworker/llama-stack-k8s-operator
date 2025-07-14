@@ -42,10 +42,34 @@ kubectl apply -f https://raw.githubusercontent.com/llamastack/llama-stack-k8s-op
 
 ### Deploying the Llama Stack Server
 
-1. Deploy the inference provider server (ollama, vllm etc). Example to deploy a new ollama server:
+1. Deploy the inference provider server (ollama, vllm)
+
+**Ollama Examples:**
+
+Deploy Ollama with default model llama3.2:1b
+```bash
+./hack/deploy-quickstart.sh
 ```
-bash hack/deploy-ollama.sh
+
+Deploy Ollama with other model:
+```bash
+./hack/deploy-quickstart.sh --provider ollama --model llama3.2:7b
 ```
+
+**vLLM Examples:**
+
+This would require a secret "hf-token-secret" in namespace "vllm-dist" for HuggingFace token (required for downloading models) to be created in advance.
+
+Deploy vLLM with default model (meta-llama/Llama-3.2-1B):
+```bash
+./hack/deploy-quickstart.sh --provider vllm
+```
+
+Deploy vLLM with GPU support:
+```bash
+./hack/deploy-quickstart.sh --provider vllm --runtime-env "VLLM_TARGET_DEVICE=gpu,CUDA_VISIBLE_DEVICES=0"
+```
+
 2. Create LlamaStackDistribution CR to get the server running. Example:
 ```
 apiVersion: llamastack.io/v1alpha1
@@ -89,9 +113,17 @@ kubectl apply -f config/samples/example-with-configmap.yaml
 - operator-sdk **v1.39.2** (v4 layout) or newer
 - kubectl configured to access your cluster
 - A running inference server:
-  - For local development, you can use the provided script: `/hack/deploy-ollama.sh`
+  - For local development, you can use the provided script: `/hack/deploy-quickstart.sh`
 
 ### Building the Operator
+
+- Prepare release files with specific versions
+
+  ```commandline
+  make release VERSION=0.2.1 LLAMASTACK_VERSION=0.2.12
+  ```
+
+  This command updates distribution configurations and generates release manifests with the specified versions.
 
 - Custom operator image can be built using your local repository
 
@@ -100,6 +132,7 @@ kubectl apply -f config/samples/example-with-configmap.yaml
   ```
 
   The default image used is `quay.io/llamastack/llama-stack-k8s-operator:latest` when not supply argument for `make image`
+  To create a local file `local.mk` with env variables can overwrite the default values set in the `Makefile`.
 
 - Once the image is created, the operator can be deployed directly. For each deployment method a
   kubeconfig should be exported
